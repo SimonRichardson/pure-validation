@@ -1,0 +1,7 @@
+*.swp
+bower_components
+dist
+output
+*.js
+.DS_Store
+.psci*
