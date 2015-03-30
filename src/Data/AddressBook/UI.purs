@@ -32,11 +32,11 @@ displayValidationErrors errs = do
   alert <- createElement "div"
 
   foreachE errs $ \err -> do
-    div <- createElement "div" 
-      >>= setText err
-      >>= addClass "alert"
-      >>= addClass "alert-danger"
-    div `appendChild` alert
+    div <- createElement "div"
+    x <- err `setText` div
+    y <- "alert" `addClass` x
+    z <- "alert-danger" `addClass` y
+    z `appendChild` alert
 
     return unit
 
