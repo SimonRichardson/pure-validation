@@ -11,14 +11,16 @@
     "output"
   ],
   "dependencies": {
-    "purescript-jquery"               : "0.3.0",
-    "purescript-arrays"               : "0.3.1",
-    "purescript-tuples"               : "0.2.3",
-    "purescript-monoid"               : "0.1.5",
-    "purescript-either"               : "0.1.4",
-    "purescript-strings"              : "0.4.2",
-    "purescript-control"              : "0.2.2",
-    "purescript-validation"           : "0.0.3",
-    "purescript-foldable-traversable" : "0.2.1"
+    "purescript-jquery"               : "*",
+    "purescript-arrays"               : "*",
+    "purescript-tuples"               : "*",
+    "purescript-monoid"               : "*",
+    "purescript-either"               : "*",
+    "purescript-strings"              : "*",
+    "purescript-control"              : "*",
+    "purescript-validation"           : "*",
+    "purescript-foldable-traversable" : "*",
+    "purescript-random"               : "*",
+    "purescript-exceptions"           : "*"
   }
 }
