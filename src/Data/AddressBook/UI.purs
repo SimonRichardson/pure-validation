@@ -59,6 +59,7 @@ validateControls = do
                                  <*> valueOf "#inputState"))
               <*> sequence [ phoneNumber HomePhone <$> valueOf "#inputHomePhone"
                            , phoneNumber CellPhone <$> valueOf "#inputCellPhone"
+                           , phoneNumber WorkPhone <$> valueOf "#inputWorkPhone"
                            ]
 
   return $ validatePerson' p
