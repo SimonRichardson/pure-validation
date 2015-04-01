@@ -22,6 +22,27 @@ instance showAddress :: Show Address where
     ", state: "  ++ show a.state ++
     " }"
 
+data ValidationError = ValidationError String Field
+
+data Field = FirstNameField
+           | LastNameField
+           | StreetField
+           | CityField
+           | StateField
+           | PhoneField PhoneType
+           | PhoneNumbersField
+
+instance showField :: Show Field where
+  show FirstNameField    = "FirstNameField"
+  show LastNameField     = "LastNameField"
+  show StreetField       = "StreetField"
+  show CityField         = "CityField"
+  show StateField        = "StateField"
+  show (PhoneField a)    = "PhoneField " ++
+    "{ type: " ++ show a ++
+    " }"
+  show PhoneNumbersField = "PhoneNumbersField"
+
 data PhoneType
   = HomePhone
   | WorkPhone
@@ -29,9 +50,9 @@ data PhoneType
   | OtherPhone
 
 instance showPhoneType :: Show PhoneType where
-  show HomePhone = "HomePhone"
-  show WorkPhone = "WorkPhone"
-  show CellPhone = "CellPhone"
+  show HomePhone  = "HomePhone"
+  show WorkPhone  = "WorkPhone"
+  show CellPhone  = "CellPhone"
   show OtherPhone = "OtherPhone"
 
 newtype PhoneNumber = PhoneNumber 

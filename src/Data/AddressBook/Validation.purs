@@ -13,19 +13,19 @@ import Control.Apply
 
 type Errors = [String]
 
-nonEmpty :: String -> String -> V Errors Unit
-nonEmpty field "" = invalid ["Field '" ++ field ++ "' cannot be empty"]
+nonEmpty :: Field -> String -> V Errors Unit
+nonEmpty field "" = invalid ["Field '" ++ show field ++ "' cannot be empty"]
 nonEmpty _     _  = pure unit
 
-nonEmpty' :: String -> String -> V Errors Unit
+nonEmpty' :: Field -> String -> V Errors Unit
 nonEmpty' field value = matches field whiteSpaceRegex value
 
-arrayNonEmpty :: forall a. String -> [a] -> V Errors Unit
-arrayNonEmpty field [] = invalid ["Field '" ++ field ++ "' must contain at least one value"]
+arrayNonEmpty :: forall a. Field -> [a] -> V Errors Unit
+arrayNonEmpty field [] = invalid ["Field '" ++ show field ++ "' must contain at least one value"]
 arrayNonEmpty _     _  = pure unit
 
-lengthIs :: String -> Number -> String -> V Errors Unit
-lengthIs field len value | S.length value /= len = invalid ["Field '" ++ field ++ "' must have length " ++ show len]
+lengthIs :: Field -> Number -> String -> V Errors Unit
+lengthIs field len value | S.length value /= len = invalid ["Field '" ++ show field ++ "' must have length " ++ show len]
 lengthIs _     _   _     = pure unit
 
 regexpFlags :: R.RegexFlags
@@ -54,30 +54,31 @@ whiteSpaceRegex =
   "^\\S+.*(\\S+)$"
   regexpFlags
 
-matches :: String -> R.Regex -> String -> V Errors Unit
+matches :: Field -> R.Regex -> String -> V Errors Unit
 matches _     regex value | R.test regex value = pure unit
-matches field _     _ = invalid ["Field '" ++ field ++ "' did not match the required format"]
+matches field _     _ = invalid ["Field '" ++ show field ++ "' did not match the required format"]
 
 validateState :: String -> V Errors String
-validateState s = (matches "State" stateRegex s *> pure s)
+validateState s = (matches StateField stateRegex s *> pure s)
 
 validateAddress :: Address -> V Errors Address
 validateAddress (Address a) =
-  address <$> (nonEmpty' "Street"  a.street *> pure a.street)
-          <*> (nonEmpty' "City"    a.city   *> pure a.city)
+  address <$> (nonEmpty' StreetField  a.street *> pure a.street)
+          <*> (nonEmpty' CityField    a.city   *> pure a.city)
           <*> validateState a.state
 
 validatePhoneNumber :: PhoneNumber -> V Errors PhoneNumber
 validatePhoneNumber (PhoneNumber p) =
   phoneNumber <$> pure p."type"
-              <*> (matches "Number" phoneNumberRegex p.number *> pure p.number)
+              <*> (matches (PhoneField p."type") phoneNumberRegex p.number *> pure p.number)
 
 validatePerson :: Person -> V Errors Person
 validatePerson (Person p) =
-  person <$> (nonEmpty' "First Name" p.firstName *> pure p.firstName)
-         <*> (nonEmpty' "Last Name" p.lastName *> pure p.lastName)
+  person <$> (nonEmpty' FirstNameField p.firstName *> pure p.firstName)
+         <*> (nonEmpty' LastNameField p.lastName *> pure p.lastName)
          <*> traverse validateAddress p.address
-         <*> (arrayNonEmpty "Phone Numbers" p.phones *> traverse validatePhoneNumber p.phones)
+         <*> (arrayNonEmpty PhoneNumbersField p.phones *> traverse validatePhoneNumber p.phones)
 
 validatePerson' :: Person -> Either Errors Person
 validatePerson' p = runV Left Right $ validatePerson p
+
