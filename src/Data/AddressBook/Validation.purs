@@ -11,21 +11,21 @@ import qualified Data.String.Regex as R
 
 import Control.Apply
 
-type Errors = [String]
+type Errors = [ValidationError]
 
 nonEmpty :: Field -> String -> V Errors Unit
-nonEmpty field "" = invalid ["Field '" ++ show field ++ "' cannot be empty"]
+nonEmpty field "" = invalid [ValidationError ("Field '" ++ show field ++ "' cannot be empty") field]
 nonEmpty _     _  = pure unit
 
 nonEmpty' :: Field -> String -> V Errors Unit
 nonEmpty' field value = matches field whiteSpaceRegex value
 
 arrayNonEmpty :: forall a. Field -> [a] -> V Errors Unit
-arrayNonEmpty field [] = invalid ["Field '" ++ show field ++ "' must contain at least one value"]
+arrayNonEmpty field [] = invalid [ValidationError ("Field '" ++ show field ++ "' must contain at least one value") field]
 arrayNonEmpty _     _  = pure unit
 
 lengthIs :: Field -> Number -> String -> V Errors Unit
-lengthIs field len value | S.length value /= len = invalid ["Field '" ++ show field ++ "' must have length " ++ show len]
+lengthIs field len value | S.length value /= len = invalid [ValidationError ("Field '" ++ show field ++ "' must have length " ++ show len) field]
 lengthIs _     _   _     = pure unit
 
 regexpFlags :: R.RegexFlags
@@ -56,7 +56,7 @@ whiteSpaceRegex =
 
 matches :: Field -> R.Regex -> String -> V Errors Unit
 matches _     regex value | R.test regex value = pure unit
-matches field _     _ = invalid ["Field '" ++ show field ++ "' did not match the required format"]
+matches field _     _ = invalid [ValidationError ("Field '" ++ show field ++ "' did not match the required format") field]
 
 validateState :: String -> V Errors String
 validateState s = (matches StateField stateRegex s *> pure s)

@@ -51,6 +51,15 @@ foreign import appendChild
   }
   """ :: forall eff. Node -> Node -> Eff (dom :: DOM | eff) Node
 
+foreign import parentNode
+  """
+  function parentNode(node) {
+    return function() {
+      return node.parentNode;
+    };
+  }
+  """ :: forall eff. Node -> Eff (dom :: DOM | eff) Node
+
 foreign import addClass
   """
   function addClass(name) {

@@ -27,25 +27,42 @@ valueOf sel = do
         Right s -> s
         _ -> ""
 
-displayValidationErrors :: forall eff. [String] -> Eff (dom :: DOM | eff) Unit
+displayValidationErrors :: forall eff. [ValidationError] -> Eff (dom :: DOM | eff) Unit
 displayValidationErrors errs = do
-  alert <- createElement "div"
-
   foreachE errs $ \err -> do
+    Just parent <- querySelector (getFormId err)
+    container <- parentNode parent
+
     div <- createElement "div"
-    x <- err `setText` div
+    x <- (getName err) `setText` div
     y <- "alert" `addClass` x
     z <- "alert-danger" `addClass` y
-    z `appendChild` alert
+    z `appendChild` container
 
     return unit
 
-  Just validationErrors <- querySelector "#validationErrors"
-  alert `appendChild` validationErrors
-
   return unit
+  where
+    getName :: ValidationError -> String
+    getName (ValidationError a _) = a
 
-validateControls :: forall eff. Eff (trace :: Trace, dom :: DOM | eff) (Either [String] Person)
+    getFormId :: ValidationError -> String
+    getFormId (ValidationError _ a) = fieldId a
+
+    fieldId :: Field -> String
+    fieldId FirstNameField = "#inputFirstName"
+    fieldId LastNameField  = "#inputLastName"
+    fieldId StreetField    = "#inputStreet"
+    fieldId CityField      = "#inputCity"
+    fieldId StateField     = "#inputState"
+    fieldId (PhoneField a) = phoneFieldId a
+
+    phoneFieldId :: PhoneType -> String
+    phoneFieldId HomePhone = "#inputHomePhone"
+    phoneFieldId CellPhone = "#inputCellPhone"
+    phoneFieldId WorkPhone = "#inputWorkPhone"
+
+validateControls :: forall eff. Eff (trace :: Trace, dom :: DOM | eff) (Either [ValidationError] Person)
 validateControls = do
   trace "Running Validators"
 
