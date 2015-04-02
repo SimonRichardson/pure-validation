@@ -32,7 +32,7 @@ removeValidationErrors = do
   -- Remove all the errors
   nodes <- querySelectorAll ".alert"
   foreachE nodes $ \node -> do
-    parent <- parentNode node
+    Just parent <- parentNode node
     node `removeChild` parent
 
     return unit
@@ -44,7 +44,7 @@ displayValidationErrors errs = do
   -- Add the errors
   foreachE errs $ \err -> do
     Just parent <- querySelector (getFormId err)
-    container <- parentNode parent
+    Just container <- parentNode parent
 
     div <- createElement "div"
     x <- (getName err) `setText` div

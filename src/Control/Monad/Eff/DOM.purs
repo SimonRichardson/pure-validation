@@ -60,14 +60,18 @@ foreign import appendChild
   }
   """ :: forall eff. Node -> Node -> Eff (dom :: DOM | eff) Node
 
-foreign import parentNode
+foreign import parentNodeImpl
   """
-  function parentNode(node) {
+  function parentNodeImpl(r, f, n) {
     return function() {
-      return node.parentNode;
+      var result = n.parentNode;
+      return result ? f(result) : r;
     };
   }
-  """ :: forall eff. Node -> Eff (dom :: DOM | eff) Node
+  """ :: forall err r. Fn3 r (Node -> r) Node (Eff (dom :: DOM | err) r)
+
+parentNode :: forall eff. Node -> Eff (dom :: DOM | eff) (Maybe Node)
+parentNode n = runFn3 parentNodeImpl Nothing Just n
 
 foreign import removeChild
   """
