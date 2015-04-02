@@ -39,6 +39,15 @@ foreign import querySelectorImpl
 querySelector :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe Node)
 querySelector s = runFn3 querySelectorImpl Nothing Just s
 
+foreign import querySelectorAll
+  """
+  function querySelectorAll(s) {
+    return function() {
+      return document.querySelectorAll(s);
+    };
+  }
+  """ :: forall eff. String -> Eff (dom :: DOM | eff) [Node]
+
 foreign import appendChild
   """
   function appendChild(child) {
@@ -59,6 +68,18 @@ foreign import parentNode
     };
   }
   """ :: forall eff. Node -> Eff (dom :: DOM | eff) Node
+
+foreign import removeChild
+  """
+  function removeChild(child) {
+    return function(node) {
+      return function() {
+        node.removeChild(child);
+        return node;
+      };
+    };
+  }
+  """ :: forall eff. Node -> Node -> Eff (dom :: DOM | eff) Node
 
 foreign import addClass
   """

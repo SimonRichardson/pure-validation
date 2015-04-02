@@ -27,8 +27,21 @@ valueOf sel = do
         Right s -> s
         _ -> ""
 
+removeValidationErrors :: forall eff. Eff (dom :: DOM | eff) Unit
+removeValidationErrors = do
+  -- Remove all the errors
+  nodes <- querySelectorAll ".alert"
+  foreachE nodes $ \node -> do
+    parent <- parentNode node
+    node `removeChild` parent
+
+    return unit
+
+  return unit
+
 displayValidationErrors :: forall eff. [ValidationError] -> Eff (dom :: DOM | eff) Unit
 displayValidationErrors errs = do
+  -- Add the errors
   foreachE errs $ \err -> do
     Just parent <- querySelector (getFormId err)
     container <- parentNode parent
@@ -84,6 +97,8 @@ validateAndUpdateUI = do
   setInnerHTML "" validationErrors
 
   errorsOrResult <- validateControls
+
+  removeValidationErrors
 
   case errorsOrResult of
     Left errs -> displayValidationErrors errs
