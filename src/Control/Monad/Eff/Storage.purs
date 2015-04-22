@@ -31,7 +31,7 @@ foreign import removeItem
   """
   function removeItem(key) {
     return function() {
-      window.localStorage.removeItem(value);
+      window.localStorage.removeItem(key);
       return {};
     };
   }

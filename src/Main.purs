@@ -28,6 +28,7 @@ newtype FormData = FormData
   
   , homePhone   :: String
   , cellPhone   :: String
+  , workPhone   :: String
   }
 
 instance formDataIsForeign :: IsForeign FormData where
@@ -41,6 +42,7 @@ instance formDataIsForeign :: IsForeign FormData where
 
     homePhone   <- readProp "homePhone" value
     cellPhone   <- readProp "cellPhone" value
+    workPhone   <- readProp "workPhone" value
 
     return $ FormData
       { firstName  : firstName
@@ -52,6 +54,7 @@ instance formDataIsForeign :: IsForeign FormData where
 
       , homePhone  : homePhone
       , cellPhone  : cellPhone
+      , workPhone  : workPhone
       } 
 
 toFormData :: Person -> FormData
@@ -70,6 +73,7 @@ toFormData (Person p@{ address = (Just (Address a))
 
            , homePhone   : pn1.number
            , cellPhone   : pn2.number
+           , workPhone   : pn3.number
            }
 
 
@@ -102,6 +106,7 @@ loadSavedData = do
 
       updateForm "#inputHomePhone" o.homePhone
       updateForm "#inputCellPhone" o.cellPhone
+      updateForm "#inputWorkPhone" o.workPhone
 
       return unit
 
@@ -119,6 +124,26 @@ validateAndSaveEntry = do
 
   return unit
 
+clearEntry :: forall eff. Eff (trace :: Trace, alert :: Alert, dom :: DOM,  storage :: Storage | eff) Unit
+clearEntry = do
+  trace "Clear Entry"
+  removeItem "person"
+  
+  updateForm "#inputFirstName" ""
+  updateForm "#inputLastName"  ""
+
+  updateForm "#inputStreet"    ""
+  updateForm "#inputCity"      ""
+  updateForm "#inputState"     ""
+
+  updateForm "#inputHomePhone" ""
+  updateForm "#inputCellPhone" ""
+  updateForm "#inputWorkPhone" ""
+
+  alert "Cleared!"
+
+  return unit
+
 main :: forall eff. Eff (trace :: Trace, alert :: Alert, dom :: DOM, storage :: Storage | eff) Unit
 main = do
   trace "Loading data from lcoal storage"
@@ -128,8 +153,10 @@ main = do
   setupEventHandlers
 
   Just saveButton <- querySelector "#saveButton"
-
   addEventListener "click" validateAndSaveEntry saveButton
+
+  Just clearButton <- querySelector "#clearButton"
+  addEventListener "click" clearEntry clearButton
 
   return unit
 
