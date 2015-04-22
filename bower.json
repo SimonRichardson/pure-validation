@@ -21,6 +21,7 @@
     "purescript-validation"           : "*",
     "purescript-foldable-traversable" : "*",
     "purescript-random"               : "*",
-    "purescript-exceptions"           : "*"
+    "purescript-exceptions"           : "*",
+    "purescript-foreign"              : "*"
   }
 }
